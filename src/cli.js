@@ -1,20 +1,20 @@
 import fs from "node:fs";
 import path from "node:path";
-import crypto from "node:crypto";
 
-function init(){
+
+function init() {
     const diretorioAtual = process.cwd();
     const caminhoGit = path.join(diretorioAtual, ".git");
     const pastas = ["objects", "objects/info", "objects/pack", "refs", "refs/heads", "refs/tags"];
 
-    for(const pasta of pastas){
+    for (const pasta of pastas) {
         const caminhoCompleto = path.join(caminhoGit, pasta);
 
-        if(fs.existsSync(caminhoCompleto)){
+        if (fs.existsSync(caminhoCompleto)) {
             console.log(`A pasta já existe: ${pasta}`)
         }
-        else{
-            fs.mkdirSync(caminhoCompleto, {recursive:true})
+        else {
+            fs.mkdirSync(caminhoCompleto, { recursive: true })
             console.log(`A pasta foi criada: ${pasta}`)
         }
     }
@@ -44,10 +44,14 @@ function init(){
     console.log("Repositório inicializado!")
 }
 
-const [ , , comando] = process.argv;
-    
-if(comando === "init"){
+const [, , comando] = process.argv;
+
+if (comando === "init") {
     init();
+}
+
+else if (comando == null) {
+    console.log("Digite um comando!")
 }
 else {
     console.log(`O comando '${comando}' não é reconhecido`)
