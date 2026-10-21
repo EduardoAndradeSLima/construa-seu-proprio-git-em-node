@@ -14,7 +14,7 @@ Estou desenvolvendo tudo gradualmente, estudando desde a manipulação de arquiv
 - [x] Inicialização de repositórios (`init`)
 - [x] Cálculo experimental de hashes SHA-1 compatíveis com objetos blob do Git
 - [x] Armazenamento de objetos compactados
-- [ ] Leitura de objetos (`cat-file`)
+- [x] Leitura de objetos (`cat-file`)
 - [ ] Preparação de arquivos (`add`)
 - [ ] Criação de commits (`commit`)
 - [ ] Histórico (`log`)
