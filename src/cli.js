@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import zlib from "node:zlib"
+import zlib from "node:zlib";
+import crypto from "node:crypto";
 
 
 function init() {
@@ -77,6 +78,32 @@ function catFile(hash) {
 
 }
 
+function hashObject(caminhoArquivo, salvarNoDisco = false) {
+    const conteudo = fs.readFileSync(caminhoArquivo);
+    const tamanho = conteudo.length;
+
+    const cabecalho = Buffer.from(`blob ${tamanho}\0`);
+    const objetoCompleto = Buffer.concat([cabecalho, conteudo]);
+    const hash = crypto.createHash("sha1").update(objetoCompleto).digest("hex");
+
+    if (salvarNoDisco) {
+        const prefixo = hash.slice(0, 2);
+        const restante = hash.slice(2);
+        const pastaObjeto = path.join(process.cwd(), ".git", "objects", prefixo);
+        const arquivoObjeto = path.join(pastaObjeto, restante);
+
+        if (!fs.existsSync(pastaObjeto)) {
+            fs.mkdirSync(pastaObjeto, { recursive: true });
+        }
+
+        if (!fs.existsSync(arquivoObjeto)) {
+            const compactado = zlib.deflateSync(objetoCompleto);
+            fs.writeFileSync(arquivoObjeto, compactado);
+        }
+    }
+    return hash;
+}
+
 
 try {
 
@@ -104,13 +131,27 @@ try {
         }
     }
 
+    else if (comando === "hash-object") {
+        const args = process.argv.slice(3);
+        const temFlagW = args.includes("-w");
+
+        const arquivo = args[args.length - 1];
+        if (!arquivo || arquivo === "-w") {
+            throw new Error("Caminho do arquivo não informado");
+        }
+        const hash = hashObject(arquivo, temFlagW);
+        console.log(hash);
+    }
+
     else if (comando === undefined) {
         console.log("Digite um comando!")
+
     }
     else {
         console.log(`O comando '${comando}' não é reconhecido`)
     }
 }
+
 catch (error) {
     console.log(error.message)
     process.exitCode = 1;
