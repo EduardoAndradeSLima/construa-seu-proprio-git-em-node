@@ -1,63 +1,52 @@
-# Construa seu Git em Node.js (Mini-Git)
+# mini-git
 
-Decidi criar este projeto do zero para entender na prática como o Git funciona por baixo dos panos. Em vez de usar comandos prontos sem saber o que está acontecendo, implementei a estrutura interna de arquivos, hashes e commits usando apenas **JavaScript e os módulos nativos do Node.js**, sem instalar nenhuma biblioteca externa.
+Implementação em Node.js das operações internas do Git (blobs, árvores e commits).
 
-O resultado é uma CLI compatível com o próprio Git oficial: os objetos e commits criados aqui podem ser lidos normalmente pelo comando `git log` do seu terminal.
+O projeto manipula arquivos, calcula hashes SHA-1 e comprime objetos com `zlib`, gerando estruturas compatíveis diretamente com o Git oficial (os commits criados podem ser lidos normalmente pelo `git log`).
 
-## O que foi implementado
+## Comandos
 
-- **`init`**: Cria a estrutura da pasta `.git` (`objects`, `refs/heads`, arquivo `HEAD` e `config`).
-- **`hash-object`**: Lê um arquivo, calcula o hash SHA-1 compatível com o Git e salva como um objeto do tipo `blob` compactado com `zlib`.
-- **`cat-file`**: Lê qualquer objeto do repositório a partir do seu hash e descompacta o conteúdo na tela.
-- **`write-tree`**: Varre as pastas e arquivos do projeto de forma recursiva e gera os objetos de árvore (`tree`), mantendo a hierarquia de diretórios.
-- **`ls-tree`**: Lista o conteúdo de um objeto de árvore, mostrando arquivos, subpastas e hashes.
-- **`commit-tree`**: Monta um objeto de commit oficial com apontamento para a árvore, autor, data, fuso horário e commit pai.
-- **`commit`**: Faz o processo completo de uma vez só: gera a árvore atual, cria o commit e atualiza a branch atual (ex: `refs/heads/main`).
-- **`log`**: Percorre o histórico de commits de trás para frente usando os ponteiros de `parent` e exibe o histórico no terminal.
+- `init`: Inicializa o repositório criando a estrutura da pasta `.git`, referências e arquivo `HEAD`.
+- `hash-object -w <arquivo>`: Calcula o hash SHA-1 de um arquivo e salva o objeto blob compactado.
+- `cat-file -p <hash>`: Descompacta e exibe o conteúdo de um objeto pelo hash.
+- `write-tree`: Varre o diretório e monta recursivamente os objetos de árvore (`tree`).
+- `ls-tree [--name-only] <hash>`: Lista os arquivos e subpastas de uma árvore.
+- `commit-tree <tree-hash> [-p <parent-hash>] -m <msg>`: Cria o objeto de commit com autor, data e referência ao commit pai.
+- `commit -m <mensagem>`: Executa o fluxo completo (grava a árvore, cria o commit e atualiza o branch atual).
+- `log`: Exibe o histórico de commits percorrendo a cadeia de referências.
 
-## Tecnologias utilizadas
+## Tecnologias
 
-- **Node.js** (versão 18+)
-- **ES Modules** (`import` / `export`)
-- Módulos nativos (zero dependências):
-  - `node:fs` (leitura e escrita de arquivos e diretórios)
-  - `node:path` (manipulação de caminhos)
-  - `node:crypto` (cálculo de hashes SHA-1)
-  - `node:zlib` (compressão e descompressão com deflate/inflate)
+- Node.js (módulos nativos: `fs`, `path`, `crypto`, `zlib`)
+- JavaScript (ES Modules)
 
-## Como testar
-
-Clone o repositório e rode os comandos diretamente com o Node:
+## Uso
 
 ```bash
-# 1. Inicializar o repositório
+# Inicializar
 node src/cli.js init
 
-# 2. Criar ou calcular o hash de um arquivo (blob)
+# Criar e salvar um blob
 node src/cli.js hash-object -w arquivo.txt
 
-# 3. Ler o conteúdo de um objeto pelo hash
+# Inspecionar objeto
 node src/cli.js cat-file -p <hash>
 
-# 4. Criar um commit com mensagem
-node src/cli.js commit -m "Meu primeiro commit"
+# Criar commit
+node src/cli.js commit -m "primeiro commit"
 
-# 5. Ver o histórico de commits
+# Ver histórico
 node src/cli.js log
 
-# 6. Listar o que tem dentro de uma árvore
+# Listar arquivos de uma árvore
 node src/cli.js ls-tree --name-only <hash-da-arvore>
 ```
 
-Se quiser usar o comando `mini-git` direto no terminal em qualquer pasta:
+Para usar o comando `mini-git` globalmente no terminal:
 
 ```bash
 npm link
 mini-git init
-mini-git commit -m "Commit usando o comando global"
+mini-git commit -m "commit global"
 mini-git log
 ```
-
----
-
-Projeto desenvolvido para estudo prático de sistemas de controle de versão e estruturas de dados.
