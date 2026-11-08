@@ -1,13 +1,20 @@
 {
   "name": "mini-git",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "Uma implementação do Git construída do zero em Node.js",
+  "main": "src/cli.js",
+  "bin": {
+    "mini-git": "./src/cli.js"
   },
-  "keywords": [],
-  "author": "",
+  "scripts": {
+    "test": "node src/cli.js"
+  },
+  "keywords": [
+    "git",
+    "cli",
+    "nodejs"
+  ],
+  "author": "Eduardo Andrade",
   "license": "ISC",
   "type": "module"
 }
